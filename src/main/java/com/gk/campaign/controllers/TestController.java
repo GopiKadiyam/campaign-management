@@ -17,7 +17,7 @@ public class TestController {
     }
 
     @GetMapping("/user")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SUPERADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public String userAccess() {
         return "User Content.";
     }
@@ -29,7 +29,7 @@ public class TestController {
     }
 
     @GetMapping("/super-admin")
-    @PreAuthorize("hasRole('SUPERADMIN')")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public String adminAccess() {
         return "SUPER_ADMIN Board.";
     }

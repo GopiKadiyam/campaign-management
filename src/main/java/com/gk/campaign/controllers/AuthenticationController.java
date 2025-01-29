@@ -79,7 +79,7 @@ public class AuthenticationController {
             strRoles.forEach(role -> {
                 switch (role) {
                     case "SUPER_ADMIN":
-                        RoleEntity adminRole = roleRepository.findByName(CMRole.ROLE_SUPERADMIN)
+                        RoleEntity adminRole = roleRepository.findByName(CMRole.ROLE_SUPER_ADMIN)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(adminRole);
 
