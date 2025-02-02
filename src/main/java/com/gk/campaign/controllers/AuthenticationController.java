@@ -2,6 +2,7 @@ package com.gk.campaign.controllers;
 
 import com.gk.campaign.entities.RoleEntity;
 import com.gk.campaign.entities.UserEntity;
+import com.gk.campaign.exceptions.InvalidRequestException;
 import com.gk.campaign.payload.request.LoginRequest;
 import com.gk.campaign.payload.request.SignupRequest;
 import com.gk.campaign.payload.response.JwtResponse;
@@ -11,22 +12,29 @@ import com.gk.campaign.repository.UserRepository;
 import com.gk.campaign.service.UserDetailsImpl;
 import com.gk.campaign.utils.enums.CMRole;
 import com.gk.campaign.utils.security.JwtUtils;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,16 +59,12 @@ public class AuthenticationController {
 
     @PostMapping("/sign-up")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Username is already taken!"));
-        }
 
+        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+            throw new InvalidRequestException(Map.of("username","Error: Username is already taken!"));
+        }
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Email is already in use!"));
+            throw new InvalidRequestException(Map.of("email","Error: email is already taken!"));
         }
 
         // Create new user's account
@@ -70,10 +74,9 @@ public class AuthenticationController {
 
         Set<String> strRoles = signUpRequest.getRole();
         Set<RoleEntity> roles = new HashSet<>();
-
-        if (strRoles == null) {
-            RoleEntity userRole = roleRepository.findByName(CMRole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        if (strRoles == null || strRoles.isEmpty()) {
+            RoleEntity userRole = roleRepository.findByName(CMRole.ROLE_ADMIN)
+                    .orElseThrow(() -> new InvalidRequestException(Map.of("role","Role User not present")));
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
@@ -101,15 +104,14 @@ public class AuthenticationController {
         user.setRoles(roles);
         userRepository.save(user);
 
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return ResponseEntity.ok(Map.of("status","User registered successfully!"));
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
 
@@ -117,11 +119,30 @@ public class AuthenticationController {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
-
+        Cookie cookie = new Cookie("token", jwt);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(60); // 1 hour
+        response.addCookie(cookie);
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
                 roles));
+    }
+
+    @GetMapping("/check-auth")
+    public ResponseEntity<?> checkAuthentication(@CookieValue(name = "token", required = false) String token) {
+        if (token != null && !token.isEmpty()) {
+            return ResponseEntity.ok().body(Collections.singletonMap("authenticated", true));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("authenticated", false));
+        }
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<?> test(){
+        return ResponseEntity.ok(Map.of("status","gopi"));
     }
 }
