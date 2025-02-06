@@ -24,19 +24,16 @@ public class SenderController {
     private SenderService senderServiceImpl;
 
     @PostMapping("/create")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<?> createSender(@Valid @RequestBody Sender sender) {
         return ResponseEntity.ok(senderServiceImpl.createSender(sender));
     }
 
     @GetMapping("/{senderId}")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<Sender> getSenderById(@NotNull @NotBlank @PathVariable("senderId") String senderId) {
         return ResponseEntity.ok(senderServiceImpl.getSenderById(senderId));
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<List<Sender>> getAllSenders() {
         return ResponseEntity.ok(senderServiceImpl.getAllSenders());
     }

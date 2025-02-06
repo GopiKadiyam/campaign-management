@@ -12,7 +12,6 @@ import java.util.List;
 @RequestMapping("/api/test")
 public class TestController {
 
-
     @GetMapping("/all")
     public String test() {
         return "Hello World !";
@@ -23,17 +22,6 @@ public class TestController {
     public String userAccess() {
         return "User Content.";
     }
-
-//    @GetMapping("/admin")
-//    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
-//    public Summary[] moderatorAccess() {
-//        List<Summary> list=new ArrayList<>();
-//        list.add(new Summary("Marketplace",1));
-//        list.add(new Summary("Last Month",1));
-//        list.add(new Summary("Last Week",1));
-//        list.add(new Summary("Today",1));
-//        return list.toArray(new Summary[0]);
-//    }
 
     @GetMapping("/super-admin")
     @PreAuthorize("hasRole('SUPER_ADMIN')")

@@ -5,7 +5,6 @@ import com.gk.campaign.models.Template;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,19 +22,16 @@ public class TemplateController {
    private TemplateService templateServiceImpl;
 
     @PostMapping("/create")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<?> createTemplate(@Valid @RequestBody Template template) {
         return ResponseEntity.ok(templateServiceImpl.createTemplate(template));
     }
 
     @GetMapping("/{templateId}")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<Template> getTemplateById(@PathVariable("templateId") String templateId) {
        return ResponseEntity.ok(templateServiceImpl.getTemplateById(templateId));
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<List<Template>> getAllTemplates() {
         return ResponseEntity.ok(templateServiceImpl.getAllTemplates());
     }

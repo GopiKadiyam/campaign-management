@@ -59,12 +59,11 @@ public class WebSecurityConfig {
         http
                 .cors(cors -> cors.disable())
                 .csrf(csrf -> csrf.disable())
-//                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/sender/**","/api/template/**","/api/campaign/**").authenticated()
-                                .anyRequest().authenticated()
+                        .requestMatchers("/api/sender/**","/api/template/**","/api/campaign/**").hasRole("SUPER_ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)  // Handles 401 errors
