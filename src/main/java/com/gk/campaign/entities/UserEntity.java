@@ -1,6 +1,5 @@
 package com.gk.campaign.entities;
 
-import com.gk.campaign.models.Role;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -32,18 +31,18 @@ import java.util.Set;
                 @UniqueConstraint(columnNames = "username"),
                 @UniqueConstraint(columnNames = "email")
         })
-public class UserEntity {
+public class UserEntity extends AuditModelEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
-    @Size(max = 20)
+    @Size(max = 100)
     private String username;
 
     @NotBlank
-    @Size(max = 50)
+    @Size(max = 100)
     @Email
     private String email;
 

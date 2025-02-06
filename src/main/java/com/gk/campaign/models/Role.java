@@ -13,11 +13,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
+public class Role extends AuditModel{
 
   private Integer id;
 
-  @Enumerated(EnumType.STRING)
   @Column(length = 20)
   private CMRole name;
 

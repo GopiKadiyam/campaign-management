@@ -14,18 +14,26 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "roles")
-public class RoleEntity {
+public class RoleEntity extends AuditModelEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
+    @Column(length = 50)
     private CMRole name;
+
+    public RoleEntity(CMRole name, LocalDateTime createdOn,LocalDateTime updatedOn){
+        this.name=name;
+        this.setCreatedOn(createdOn);
+        this.setUpdatedOn(updatedOn);
+    }
 }

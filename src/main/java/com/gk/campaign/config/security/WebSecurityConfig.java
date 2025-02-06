@@ -1,8 +1,9 @@
 package com.gk.campaign.config.security;
 
+import com.gk.campaign.exceptions.security.CustomAccessDeniedHandler;
+import com.gk.campaign.exceptions.security.JwtAuthenticationEntryPoint;
 import com.gk.campaign.service.UserDetailsServiceImpl;
-import com.gk.campaign.utils.security.AuthEntryPointJwt;
-import com.gk.campaign.utils.security.AuthTokenFilter;
+import com.gk.campaign.utils.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,11 +26,14 @@ public class WebSecurityConfig {
     UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    private AuthEntryPointJwt unauthorizedHandler;
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
-    public AuthTokenFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter();
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
     }
 
     @Bean
@@ -55,16 +59,19 @@ public class WebSecurityConfig {
         http
                 .cors(cors -> cors.disable())
                 .csrf(csrf -> csrf.disable())
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+//                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/test/**").permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/sender/**","/api/template/**","/api/campaign/**").authenticated()
                                 .anyRequest().authenticated()
-                );
-
-        http.authenticationProvider(authenticationProvider());
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)  // Handles 401 errors
+                        .accessDeniedHandler(customAccessDeniedHandler)  // Handles 403 errors
+                )
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

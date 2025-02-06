@@ -25,7 +25,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User extends AuditModel{
 
   private Long id;
 
