@@ -10,4 +10,6 @@ public interface SenderService {
     Sender getSenderById(String senderId);
 
     List<Sender> getAllSenders();
+
+    List<String> getAllSenderIds();
 }

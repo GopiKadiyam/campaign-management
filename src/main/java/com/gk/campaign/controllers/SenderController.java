@@ -37,4 +37,9 @@ public class SenderController {
     public ResponseEntity<List<Sender>> getAllSenders() {
         return ResponseEntity.ok(senderServiceImpl.getAllSenders());
     }
+
+    @GetMapping("/id/all")
+    public ResponseEntity<List<String>> getALlSenderIds(){
+        return ResponseEntity.ok(senderServiceImpl.getAllSenderIds());
+    }
 }

@@ -45,4 +45,14 @@ public class TemplateServiceImpl implements TemplateService {
     public List<Template> getAllTemplates() {
         return templateMapper.templateEntitiesToTemplates(templateRepository.findAll());
     }
+
+    @Override
+    public List<String> getAllTemplateIds() {
+        return templateRepository.getAllTemplateIds();
+    }
+
+    @Override
+    public List<String> getAllTemplateIdsBySenderId(String senderId) {
+        return templateRepository.getAllTemplateIdsBySenderId(senderId);
+    }
 }

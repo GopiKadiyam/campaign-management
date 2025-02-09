@@ -13,4 +13,8 @@ public interface TemplateService {
     Template getTemplateById(String templateId);
 
     List<Template> getAllTemplates();
+
+    List<String> getAllTemplateIds();
+
+    List<String> getAllTemplateIdsBySenderId(String senderId);
 }

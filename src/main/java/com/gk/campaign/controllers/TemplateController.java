@@ -35,4 +35,14 @@ public class TemplateController {
     public ResponseEntity<List<Template>> getAllTemplates() {
         return ResponseEntity.ok(templateServiceImpl.getAllTemplates());
     }
+
+    @GetMapping("/id/all")
+    public ResponseEntity<List<String>> getALlSenderIds(){
+        return ResponseEntity.ok(templateServiceImpl.getAllTemplateIds());
+    }
+
+    @GetMapping("/id/all/{senderId}")
+    public ResponseEntity<List<String>> getALlSenderIds(@PathVariable("senderId")String senderId){
+        return ResponseEntity.ok(templateServiceImpl.getAllTemplateIdsBySenderId(senderId));
+    }
 }

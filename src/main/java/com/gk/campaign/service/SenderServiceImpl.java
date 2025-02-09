@@ -40,4 +40,9 @@ public class SenderServiceImpl implements SenderService {
     public List<Sender> getAllSenders() {
         return senderMapper.senderEntitiesToSenderResponses(senderRepository.findAll());
     }
+
+    @Override
+    public List<String> getAllSenderIds() {
+        return senderRepository.getAllSenderIds();
+    }
 }
