@@ -1,10 +1,10 @@
 package com.gk.campaign.service;
 
-import com.gk.campaign.entities.SenderEntity;
+import com.gk.campaign.entities.postgres.SenderEntity;
 import com.gk.campaign.exceptions.EntityNotFoundException;
 import com.gk.campaign.mappers.SenderMapper;
 import com.gk.campaign.models.Sender;
-import com.gk.campaign.repository.SenderRepository;
+import com.gk.campaign.repository.postgres.SenderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

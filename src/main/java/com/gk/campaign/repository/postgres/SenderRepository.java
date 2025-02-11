@@ -1,6 +1,6 @@
-package com.gk.campaign.repository;
+package com.gk.campaign.repository.postgres;
 
-import com.gk.campaign.entities.SenderEntity;
+import com.gk.campaign.entities.postgres.SenderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

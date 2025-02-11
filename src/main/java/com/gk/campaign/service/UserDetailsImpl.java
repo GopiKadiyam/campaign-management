@@ -1,7 +1,7 @@
 package com.gk.campaign.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.gk.campaign.entities.UserEntity;
+import com.gk.campaign.entities.postgres.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

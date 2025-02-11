@@ -1,4 +1,4 @@
-package com.gk.campaign.entities;
+package com.gk.campaign.entities.postgres;
 
 import com.gk.campaign.utils.enums.CMRole;
 import jakarta.persistence.Column;

@@ -1,16 +1,16 @@
 package com.gk.campaign.service;
 
-import com.gk.campaign.entities.CampaignDataEntity;
-import com.gk.campaign.entities.CampaignEntity;
-import com.gk.campaign.entities.SenderEntity;
-import com.gk.campaign.entities.TemplateEntity;
+import com.gk.campaign.entities.postgres.CampaignDataEntity;
+import com.gk.campaign.entities.postgres.CampaignEntity;
+import com.gk.campaign.entities.postgres.SenderEntity;
+import com.gk.campaign.entities.postgres.TemplateEntity;
 import com.gk.campaign.exceptions.EntityNotFoundException;
 import com.gk.campaign.mappers.CampaignMapper;
 import com.gk.campaign.models.Campaign;
-import com.gk.campaign.repository.CampaignDataRepository;
-import com.gk.campaign.repository.CampaignRepository;
-import com.gk.campaign.repository.SenderRepository;
-import com.gk.campaign.repository.TemplateRepository;
+import com.gk.campaign.repository.postgres.CampaignDataRepository;
+import com.gk.campaign.repository.postgres.CampaignRepository;
+import com.gk.campaign.repository.postgres.SenderRepository;
+import com.gk.campaign.repository.postgres.TemplateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class CampaignServiceImpl implements CampaignService {
@@ -37,9 +36,12 @@ public class CampaignServiceImpl implements CampaignService {
     @Autowired
     private CampaignDataRepository campaignDataRepository;
 
+    @Autowired
+    private CsvProcessorService csvProcessorService;
+
     @Override
     @Transactional
-    public Map<String, Long> createCampaign(Campaign campaign, MultipartFile file, boolean isFileDataPresent) throws IOException {
+    public Map<String, Long> createCampaign(Campaign campaign, MultipartFile file, boolean isFileDataPresent) throws Exception {
         SenderEntity senderEntity = senderRepository.findBySenderId(campaign.getSenderId())
                 .orElseThrow(() -> new EntityNotFoundException(Map.of("Sender Id", "sender id :" + campaign.getSenderId() + " is nt found in db")));
         TemplateEntity templateEntity = templateRepository.findByTemplateId(campaign.getTemplateId())
@@ -49,8 +51,9 @@ public class CampaignServiceImpl implements CampaignService {
         campaignEntity.setTemplate(templateEntity);
         campaignEntity.setCampaignData(storeCampaignData(file, campaign.getCampaignData(), isFileDataPresent, campaignEntity));
         campaignEntity.setScheduleAt(LocalDateTime.now());
-
         campaignEntity = campaignRepository.save(campaignEntity);
+        csvProcessorService.processCsvFile(file,campaignEntity.getId(), templateEntity.getTemplateId());
+
         return Map.of("campaignID", campaignEntity.getId());
     }
 
@@ -75,7 +78,7 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     @Transactional
     public CampaignDataEntity getCampaignFileData(Long campaignId) {
-        CampaignEntity campaignEntity=getCampaignEntityById(campaignId);
+        CampaignEntity campaignEntity = getCampaignEntityById(campaignId);
         return campaignEntity.getCampaignData();
     }
 

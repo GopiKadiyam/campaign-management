@@ -1,6 +1,6 @@
 package com.gk.campaign.mappers;
 
-import com.gk.campaign.entities.SenderEntity;
+import com.gk.campaign.entities.postgres.SenderEntity;
 import com.gk.campaign.models.Sender;
 import org.mapstruct.Mapper;
 

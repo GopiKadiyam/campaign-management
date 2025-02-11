@@ -1,13 +1,13 @@
 package com.gk.campaign.controllers;
 
-import com.gk.campaign.entities.RoleEntity;
-import com.gk.campaign.entities.UserEntity;
+import com.gk.campaign.entities.postgres.RoleEntity;
+import com.gk.campaign.entities.postgres.UserEntity;
 import com.gk.campaign.exceptions.InvalidRequestException;
 import com.gk.campaign.payload.request.LoginRequest;
 import com.gk.campaign.payload.request.SignupRequest;
 import com.gk.campaign.payload.response.JwtResponse;
-import com.gk.campaign.repository.RoleRepository;
-import com.gk.campaign.repository.UserRepository;
+import com.gk.campaign.repository.postgres.RoleRepository;
+import com.gk.campaign.repository.postgres.UserRepository;
 import com.gk.campaign.service.UserDetailsImpl;
 import com.gk.campaign.utils.enums.CMRole;
 import com.gk.campaign.utils.security.JwtUtils;
@@ -29,8 +29,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;

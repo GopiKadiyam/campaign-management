@@ -1,9 +1,11 @@
 package com.gk.campaign.controllers;
 
-import com.gk.campaign.entities.CampaignDataEntity;
+import com.gk.campaign.entities.postgres.CampaignDataEntity;
+import com.gk.campaign.entities.redis.CampaignMessage;
 import com.gk.campaign.exceptions.InvalidRequestException;
 import com.gk.campaign.models.Campaign;
 import com.gk.campaign.service.CampaignService;
+import com.gk.campaign.service.CampaignMessagesCrudServiceImpl;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public class CampaignController {
 
     @PostMapping(value = "/create", consumes = {"multipart/form-data"})
     public Map<String, Long> createCampaign(@RequestPart("campaign") @Valid Campaign campaign,
-                                            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+                                            @RequestPart(value = "file", required = false) MultipartFile file) throws Exception {
         boolean isFileDataPresent;
         if (file != null) {
             isFileDataPresent = true;
@@ -65,5 +66,16 @@ public class CampaignController {
     @GetMapping("/all")
     public List<Campaign> getAllCampaigns() {
         return campaignServiceImpl.getAllCampaigns();
+    }
+
+    @Autowired
+    private CampaignMessagesCrudServiceImpl campaignMessagesCrudService;
+    @GetMapping("/individual/{cId}/{phone}")
+    public CampaignMessage getIndividualCampaign(@PathVariable("cId")String cId, @PathVariable("phone")String phone) {
+        return campaignMessagesCrudService.getIndividualCampaign(cId,phone);
+    }
+    @GetMapping("/individual/all/{cId}")
+    public List<Map<Object,Object>> getAllIndividualCampaignForCampaignId(@PathVariable("cId")String cId) {
+        return campaignMessagesCrudService.getAllIndividualCampaignForCampaignId(cId);
     }
 }

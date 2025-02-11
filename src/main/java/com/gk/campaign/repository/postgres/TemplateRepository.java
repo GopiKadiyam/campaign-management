@@ -1,8 +1,9 @@
-package com.gk.campaign.repository;
+package com.gk.campaign.repository.postgres;
 
-import com.gk.campaign.entities.TemplateEntity;
+import com.gk.campaign.entities.postgres.TemplateEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface TemplateRepository extends JpaRepository<TemplateEntity,Long> {
     @Query("SELECT te.templateId FROM TemplateEntity te WHERE  te.sender.senderId = ?1")
     List<String> getAllTemplateIdsBySenderId(String senderId);
 
+    @Query("SELECT t.templateBody FROM TemplateEntity t WHERE t.templateId = :templateId")
+    String findTemplateBodyByTemplateId(@Param("templateId") String templateId);
 }

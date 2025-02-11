@@ -1,4 +1,4 @@
-package com.gk.campaign.entities;
+package com.gk.campaign.entities.postgres;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

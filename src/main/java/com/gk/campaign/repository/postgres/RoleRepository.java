@@ -1,6 +1,6 @@
-package com.gk.campaign.repository;
+package com.gk.campaign.repository.postgres;
 
-import com.gk.campaign.entities.RoleEntity;
+import com.gk.campaign.entities.postgres.RoleEntity;
 import com.gk.campaign.utils.enums.CMRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

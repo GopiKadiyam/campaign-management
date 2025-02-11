@@ -1,6 +1,6 @@
 package com.gk.campaign.mappers;
 
-import com.gk.campaign.entities.CampaignEntity;
+import com.gk.campaign.entities.postgres.CampaignEntity;
 import com.gk.campaign.models.Campaign;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
