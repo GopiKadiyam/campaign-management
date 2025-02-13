@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface CampaignService {
 
-    Map<String,Long> createCampaign(Campaign campaign, MultipartFile file,boolean isFileDataPresent) throws Exception;
+    Map<String,String> createCampaign(Campaign campaign, MultipartFile file,boolean isFileDataPresent) throws Exception;
     Campaign getCampaignById(Long campaignId);
     List<Campaign> getAllCampaigns();
     CampaignDataEntity getCampaignFileData(Long fileId);

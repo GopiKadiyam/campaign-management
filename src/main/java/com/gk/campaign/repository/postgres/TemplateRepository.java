@@ -22,4 +22,5 @@ public interface TemplateRepository extends JpaRepository<TemplateEntity,Long> {
 
     @Query("SELECT t.templateBody FROM TemplateEntity t WHERE t.templateId = :templateId")
     String findTemplateBodyByTemplateId(@Param("templateId") String templateId);
+
 }

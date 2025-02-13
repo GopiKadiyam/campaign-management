@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/template")
@@ -31,6 +32,11 @@ public class TemplateController {
        return ResponseEntity.ok(templateServiceImpl.getTemplateById(templateId));
     }
 
+    @GetMapping("/{templateId}/templateBody")
+    public ResponseEntity<Map<String,String>> getTemplateMsgByTemplateById(@PathVariable("templateId") String templateId) {
+        return ResponseEntity.ok(templateServiceImpl.getTemplateMsgByTemplateById(templateId));
+    }
+
     @GetMapping("/all")
     public ResponseEntity<List<Template>> getAllTemplates() {
         return ResponseEntity.ok(templateServiceImpl.getAllTemplates());
@@ -45,4 +51,5 @@ public class TemplateController {
     public ResponseEntity<List<String>> getALlSenderIds(@PathVariable("senderId")String senderId){
         return ResponseEntity.ok(templateServiceImpl.getAllTemplateIdsBySenderId(senderId));
     }
+
 }

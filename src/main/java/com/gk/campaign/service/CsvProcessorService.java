@@ -1,6 +1,7 @@
 package com.gk.campaign.service;
 
 import com.gk.campaign.repository.postgres.TemplateRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -21,16 +22,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
+@Slf4j
 public class CsvProcessorService {
 
     @Autowired
     private TemplateRepository templateRepository;
     @Autowired
-    private MessageSenderServiceImpl messageSenderService;
+    private DashboardAsyncTasks dashboardAsyncTasks;
 
-    private final ExecutorService executor = Executors.newFixedThreadPool(10);  // Thread pool for async tasks
+    private final ExecutorService executor = Executors.newFixedThreadPool(50);  // Thread pool for async tasks
 
     public void processCsvFile(MultipartFile file, Long campaignId, String templateId) throws Exception {
+        log.info("processCsvFile started for campaign {}",campaignId);
+        long count=0;
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
              CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
             String templateBody = templateRepository.findTemplateBodyByTemplateId(templateId);
@@ -49,13 +53,15 @@ public class CsvProcessorService {
                 String phone = templateVariables.get("var1");
                 // Send message asynchronously
                 CompletableFuture<Void> future = CompletableFuture.runAsync(() ->
-                        messageSenderService.sendMessage(phone, renderedMessage, campaignId), executor);
+                        dashboardAsyncTasks.sendMessage(phone, renderedMessage, campaignId), executor);
                 futures.add(future);
+                count++;
             }
 
             // Wait for all async tasks to complete
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         }
+        log.info("processCsvFile completed for campaign {} . total count {}",campaignId,count);
     }
 
     private String renderTemplate(String templateBody, Map<String, String> variables) {

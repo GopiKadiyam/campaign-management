@@ -11,6 +11,7 @@ import com.gk.campaign.repository.postgres.CampaignDataRepository;
 import com.gk.campaign.repository.postgres.CampaignRepository;
 import com.gk.campaign.repository.postgres.SenderRepository;
 import com.gk.campaign.repository.postgres.TemplateRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class CampaignServiceImpl implements CampaignService {
 
     @Autowired
@@ -41,7 +43,7 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     @Transactional
-    public Map<String, Long> createCampaign(Campaign campaign, MultipartFile file, boolean isFileDataPresent) throws Exception {
+    public Map<String, String> createCampaign(Campaign campaign, MultipartFile file, boolean isFileDataPresent) throws Exception {
         SenderEntity senderEntity = senderRepository.findBySenderId(campaign.getSenderId())
                 .orElseThrow(() -> new EntityNotFoundException(Map.of("Sender Id", "sender id :" + campaign.getSenderId() + " is nt found in db")));
         TemplateEntity templateEntity = templateRepository.findByTemplateId(campaign.getTemplateId())
@@ -50,11 +52,17 @@ public class CampaignServiceImpl implements CampaignService {
         campaignEntity.setSender(senderEntity);
         campaignEntity.setTemplate(templateEntity);
         campaignEntity.setCampaignData(storeCampaignData(file, campaign.getCampaignData(), isFileDataPresent, campaignEntity));
-        campaignEntity.setScheduleAt(LocalDateTime.now());
+//        campaignEntity.setScheduleAt(LocalDateTime.now());
         campaignEntity = campaignRepository.save(campaignEntity);
-        csvProcessorService.processCsvFile(file,campaignEntity.getId(), templateEntity.getTemplateId());
-
-        return Map.of("campaignID", campaignEntity.getId());
+        Long campaignId=campaignEntity.getId();
+        log.info("campaign is stored with id : {}",campaignId);
+        if (campaign.getScheduleAt() != null || campaign.getScheduleAt().isBefore(LocalDateTime.now())) {
+            log.info("campaign {} processing started",campaignId);
+            csvProcessorService.processCsvFile(file, campaignId, templateEntity.getTemplateId());
+        }else{
+            log.info("campaign processing will happen at scheduled time");
+        }
+        return Map.of("campaignID", "campaignID: " +campaignId + " , is generated successfully. Please check in portal for status");
     }
 
     @Transactional

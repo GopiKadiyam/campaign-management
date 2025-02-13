@@ -31,7 +31,7 @@ public class CampaignController {
     private CampaignService campaignServiceImpl;
 
     @PostMapping(value = "/create", consumes = {"multipart/form-data"})
-    public Map<String, Long> createCampaign(@RequestPart("campaign") @Valid Campaign campaign,
+    public Map<String, String> createCampaign(@RequestPart("campaign") @Valid Campaign campaign,
                                             @RequestPart(value = "file", required = false) MultipartFile file) throws Exception {
         boolean isFileDataPresent;
         if (file != null) {
@@ -70,12 +70,17 @@ public class CampaignController {
 
     @Autowired
     private CampaignMessagesCrudServiceImpl campaignMessagesCrudService;
-    @GetMapping("/individual/{cId}/{phone}")
-    public CampaignMessage getIndividualCampaign(@PathVariable("cId")String cId, @PathVariable("phone")String phone) {
-        return campaignMessagesCrudService.getIndividualCampaign(cId,phone);
+    @GetMapping("/{cId}/message/{phone}")
+    public CampaignMessage getIndividualMessageOfIndividualCampaign(@PathVariable("cId")String cId, @PathVariable("phone")String phone) {
+        return campaignMessagesCrudService.getIndividualMessageOfIndividualCampaign(cId,phone);
     }
-    @GetMapping("/individual/all/{cId}")
-    public List<Map<Object,Object>> getAllIndividualCampaignForCampaignId(@PathVariable("cId")String cId) {
-        return campaignMessagesCrudService.getAllIndividualCampaignForCampaignId(cId);
+    @GetMapping("/{cId}/message/all")
+    public List<Map<Object,Object>> getAllMessagesForCampaignId(@PathVariable("cId")String cId) {
+        return campaignMessagesCrudService.getAllMessagesForCampaignId(cId);
+    }
+
+    @GetMapping("/{cId}/message/stats")
+    public Map<Object,Object> getMessagesStatsForCampaign(@PathVariable("cId")String cId) {
+        return campaignMessagesCrudService.getMessagesStatsForCampaign(cId);
     }
 }

@@ -30,7 +30,7 @@ public class TemplateServiceImpl implements TemplateService {
             TemplateEntity templateEntity = templateMapper.templateToTemplateEntity(template);
             templateEntity.setSender(senderEntity);
             return templateMapper.templateEntityToTemplate(templateRepository.save(templateEntity));
-        }).orElseThrow(()->new EntityNotFoundException(Map.of("senderId","senderId: "+template.getSenderId()+" not found ")));
+        }).orElseThrow(() -> new EntityNotFoundException(Map.of("senderId", "senderId: " + template.getSenderId() + " not found ")));
     }
 
     @Override
@@ -38,6 +38,11 @@ public class TemplateServiceImpl implements TemplateService {
     public Template getTemplateById(String templateId) {
         return templateRepository.findByTemplateId(templateId).map(templateEntity -> templateMapper.templateEntityToTemplate(templateEntity))
                 .orElseThrow(() -> new EntityNotFoundException(Map.of("Template Id", "template id :" + templateId + " is nt found in db")));
+    }
+
+    @Override
+    public Map<String, String> getTemplateMsgByTemplateById(String templateId) {
+        return Map.of("templateBody", templateRepository.findTemplateBodyByTemplateId(templateId));
     }
 
     @Override
